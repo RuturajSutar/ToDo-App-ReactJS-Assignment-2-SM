@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState , useEffect } from "react";
+import AddTODO from "./Components/AddTODO";
+import DeleteTODO from "./Components/DeleteTODO";
+import ToDoList from "./Components/ToDoList";
 
 function App() {
+  const [myArray , setArray] = useState([]);
+
+  useEffect(() => {
+    const data = localStorage.getItem("myArray");
+    if(data) {
+      setArray(JSON.parse(data));
+    }
+  } , []);
+
+  useEffect(() => {
+    localStorage.setItem("myArray" , JSON.stringify(myArray));
+  } , [myArray]);
+
+  const recieveData = (myData) => {
+    const newData = {...myData , id : Math.random().toString()};
+    console.log("In App.js");
+    console.log(newData);
+    setArray((prevState) => {
+      return [newData , ...prevState];
+    })
+  }
+
+  const myRemoveData = () => {
+    localStorage.removeItem("myArray");
+    setArray([]);
+    window.alert("Data is Deleted Successfully")
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <AddTODO addData = {recieveData}></AddTODO>
+      <DeleteTODO removeData = {myRemoveData}></DeleteTODO>
+      <ToDoList array = {myArray}></ToDoList>
     </div>
   );
 }
